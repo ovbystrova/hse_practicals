@@ -1,6 +1,9 @@
 ---
-title: "Harry Potter 1-3 EDA"
-output: html_document
+title: "Harry Potter 1-3. Explorative analysis of movies' transcription"
+author:
+- Olga Bystrova
+- Nikita Login
+output: pdf_document
 ---
 
 ```{r}
@@ -31,7 +34,6 @@ output: html_document
 #install.packages("IRdisplay")
 ```
 
-
 # Introduction and data description
 
 In this project we explore the first three movies related to the Harry Potter novel: Harry Potter and the Philosopher of Stone, Harry Potter and the Chamber of Secrets, Harry Potter and the Prisoner of the Azkaban. 
@@ -61,27 +63,27 @@ options(warn = -23) # ignore all warnings
 options(scipen = 10000) 
 options(repr.plot.width = 14.0, repr.plot.height = 10.0)
 
-library(tidyverse)
-library(dplyr)
+suppressMessages(library(tidyverse))
+suppressMessages(library(dplyr))
 #library(magrittr)
-library(scales) # visualisation
-library(RColorBrewer) # color visualisation
-library(ggsci)
-library(ggthemes)
-library(lubridate) # date ant time management
-library(viridis) # color maps
-library(ggrepel)
-library(reshape)
-library(gridExtra)
-library(tm) # text mining
-library(SnowballC) #snowball stemmer 
-library(wordcloud)
-library(NLP)
-library(widyr)
-library(wordcloud2)
-library(tidytext)
-library(janeaustenr)
-library(htmlwidgets)
+suppressMessages(library(scales)) # visualisation
+suppressMessages(library(RColorBrewer)) # color visualisation
+suppressMessages(library(ggsci))
+suppressMessages(library(ggthemes))
+suppressMessages(library(lubridate)) # date ant time management
+suppressMessages(library(viridis)) # color maps
+suppressMessages(library(ggrepel))
+suppressMessages(library(reshape))
+suppressMessages(library(gridExtra))
+suppressMessages(library(tm)) # text mining
+suppressMessages(library(SnowballC)) #snowball stemmer 
+suppressMessages(library(wordcloud))
+suppressMessages(library(NLP))
+suppressMessages(library(widyr))
+suppressMessages(library(wordcloud2))
+suppressMessages(library(tidytext))
+suppressMessages(library(janeaustenr))
+suppressMessages(library(htmlwidgets))
 
 annotate <- ggplot2::annotate
 
@@ -488,8 +490,8 @@ There are several insights that we can see: 1) Dumbledore, Lupin and Mrs. Weasle
 In order to analyse (dis)similarities between speech of different characters we created a TF-IDF matrix of all lines from our corpus of three movie scripts. We used implementation of TF-IDF feature extraction algorithm from *tidytext* R package. We've also trained a Nearest Mean Classifier from *klaR* R package to predict which character each line belongs to.
 
 ```{r}
-library(klaR)
-library(Rtsne)
+suppressMessages(library(klaR))
+suppressMessages(library(Rtsne))
 ```
 
 
@@ -533,12 +535,17 @@ par(mgp=c(2.5,1,0))
 plot(tsne$Y, t='n', main="tSNE", xlab="tSNE dimension 1", ylab="tSNE dimension 2", "cex.main"=2, "cex.lab"=1.5)
 text(tsne$Y, labels=y, col=colors[y])
 ```
+
 *Figure 10: t-SNE plot of lines of all characters*
 
 From Figure 10, we can see that t-SNE representation plot of lines of all characters doesn't show anything meaningful. Therefore we decided to keep only characters whose number of lines in concatenation of three movie scripts is no less than of 90% quantile of all character line counts.
 
 ```{r}
-Char_Dial <- as_tibble(table(Script$Character), .name_repair=~c("Character","n"))
+Char_Dial <- as.tibble(table(Script$Character), .name_repair=~c("Character","n"))
+Char_top <- Char_Dial %>%
+  filter(n >= 122)
+Script_top <- Script %>%
+  filter(Character %in% Char_top$Character)
 ```
 
 ```{r}
@@ -578,12 +585,13 @@ tsne_plot <- data.frame(x1 = tsne$Y[,1], x2=tsne$Y[,2],
 
 ggplot(tsne_plot) + geom_point(aes(x=x1, y=x2, color=col))
 ```
+
 *Figure 11: t-SNE plot of lines of characters from 90% quantile*
 
 We can see that characters are quite close to each other by TF-IDF if we take into account their single lines. However, this result is in the nature of T-SNE as it tries to preserve local distances between points, sometimes ignoring global ones. In case of TF-IDF scores of single lines (which may: 1.) be very short 2.) highly vary in length) it would be better to use Princinpal Component Analysis for dimensionality reduction and visualization as it is better for preserving global distances (though far worse at preserving local ones).
 
 ```{r}
-library('data.table')
+suppressMessages(library('data.table'))
 ```
 
 ```{r}
@@ -684,6 +692,7 @@ table(y_bin) / length(y_bin)
 ```
 
 All three models has shown fairly high accuracy scores (0.72, 0.84 and 0.82 for Harry, Hermione and Ron respectively). Models for Harry and Hermione have beaten the majority vote accuracy baselines (0.67 for Harry and 0.84 for Hermione), while the model for Ron haven't (with the baseline of 0.83).
+
 # Conclusion
 
 Overall, we have proven that our first hypothesis is completely true: ‘Harry’ is the most popular word to appear in the first three movies, ‘Harry Potter’ is the most common bigram as well.
