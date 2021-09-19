@@ -1,0 +1,7 @@
+#!/usr/bin/python3
+import sys
+from statistics import mean
+
+print(
+    mean([float(line) for line in sys.stdin])
+)
