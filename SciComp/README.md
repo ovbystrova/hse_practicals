@@ -6,4 +6,4 @@ Assignments:
 * [Practical 3: Interfaces I](Practical3/)
 * [Practical 4: Collaboration](Practical_4/)
 * [Practical 5: Licensing](Practical_5/)
-* [TODO: Practical 6](Practical_6)
+* [Practical 6: Software Design Patterns](Practical_6)
